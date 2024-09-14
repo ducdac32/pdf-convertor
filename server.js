@@ -3,7 +3,7 @@ const pdfStreamResponse = require("./html2pdf");
 const cors = require("cors");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 4000;
 
 // Enable CORS for all routes
 app.use(cors());
