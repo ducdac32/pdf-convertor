@@ -53,7 +53,7 @@ const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
-const createPDF = async (url = "https://www.google.com/") => {
+const pdfStreamResponse = async (url = "https://www.google.com/", response) => {
   const browser = await puppeteer.launch({
     userDataDir: "cache",
     headless: "new",
@@ -90,17 +90,25 @@ const createPDF = async (url = "https://www.google.com/") => {
 
     const stream = await page.createPDFStream(PAPERWORK_PDF_OPTIONS);
 
-    stream.on("close", async () => {
-      await page.close();
-      await browser.close();
-    });
+    const reader = stream.getReader();
 
-    return stream;
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        response.end();
+        break;
+      }
+
+      response.write(value);
+    }
   } catch (error) {
     await page.close();
     await browser.close();
-    console.log(error);
+  } finally {
+    await page.close();
+    await browser.close();
   }
 };
 
-module.exports = createPDF;
+module.exports = pdfStreamResponse;

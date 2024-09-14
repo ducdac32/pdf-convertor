@@ -1,5 +1,5 @@
 const express = require("express");
-const createPDF = require("./html2pdf");
+const pdfStreamResponse = require("./html2pdf");
 const cors = require("cors");
 
 const app = express();
@@ -12,8 +12,7 @@ app.get("/download-pdf", async (req, res) => {
   try {
     const { url } = req.query;
     console.log(url);
-    const stream = await createPDF(url);
-    stream.pipe(res);
+    await pdfStreamResponse(url, res);
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while generating the PDF");
