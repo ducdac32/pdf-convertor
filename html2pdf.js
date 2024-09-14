@@ -92,6 +92,8 @@ const pdfStreamResponse = async (url = "https://www.google.com/", response) => {
 
     const reader = stream.getReader();
 
+    response.setHeader("Content-Type", "application/pdf");
+
     while (true) {
       const { done, value } = await reader.read();
 
